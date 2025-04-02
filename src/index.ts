@@ -4,6 +4,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import session from 'cookie-session';
 import { config } from './config/app.config';
+import connectDB from './config/database.config';
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;
@@ -32,4 +33,5 @@ app.get('/', (req: Request, res: Response, next: NextFunction) => {
 
 app.listen(config.PORT, () => {
   console.log(`App is listening on port:${config.PORT}`);
+  connectDB();
 });
