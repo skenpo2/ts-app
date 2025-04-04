@@ -24,10 +24,10 @@ export const loginOrCreateAccountService = async (data: {
 
   try {
     session.startTransaction();
-    const existingUser = await UserModel.findOne({ email }).session(session);
+    let user = await UserModel.findOne({ email }).session(session);
 
-    if (!existingUser) {
-      const user = new UserModel({
+    if (!user) {
+      user = new UserModel({
         email,
         name: displayName,
         profilePicture: picture || null,
@@ -66,7 +66,7 @@ export const loginOrCreateAccountService = async (data: {
     }
     await session.commitTransaction();
     session.endSession();
-    return { user: existingUser };
+    return { user };
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
@@ -153,4 +153,19 @@ export const verifyUserService = async ({
   provider?: string;
 }) => {
   const account = await AccountModel.findOne({ email, providerId: email });
+  if (!account) {
+    throw new NotFoundException('User not found');
+  }
+
+  const user = await UserModel.findById(account.userId).populate(
+    'currentWorkspace'
+  );
+  if (!user) {
+    throw new NotFoundException('User not found');
+  }
+  const isPasswordValid = await user.comparePassword(password);
+  if (!isPasswordValid) {
+    throw new UnauthorizedException('Invalid password');
+  }
+  return user.omitPassword();
 };
