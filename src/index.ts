@@ -6,6 +6,8 @@ import session from 'cookie-session';
 import { config } from './config/app.config';
 import connectDB from './config/database.config';
 
+import authRoutes from './routes/auth.routes';
+
 const app = express();
 const BASE_PATH = config.BASE_PATH;
 
@@ -25,11 +27,7 @@ app.use(
 
 app.use(cors());
 
-app.get('/', (req: Request, res: Response, next: NextFunction) => {
-  res.status(200).json({
-    message: 'welcome here',
-  });
-});
+app.use(`${BASE_PATH}/auth`, authRoutes);
 
 app.listen(config.PORT, () => {
   console.log(`App is listening on port:${config.PORT}`);
