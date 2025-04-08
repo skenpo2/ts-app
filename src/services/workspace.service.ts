@@ -42,6 +42,9 @@ export const createWorkspaceService = async (
   await member.save();
 
   user.currentWorkspace = workspace._id as mongoose.Types.ObjectId;
+  return {
+    workspace,
+  };
 };
 
 export const getAllWorkspacesUserIsMemberService = async (userId: string) => {
@@ -105,13 +108,13 @@ export const getWorkspaceAnalyticsService = async (workspaceId: string) => {
     workspace: workspaceId,
     status: TaskStatusEnum.DONE,
   });
-  const taskAnalytics = {
+  const analytics = {
     totalTasks,
     overDueTask,
     completedTasks,
   };
 
-  return { taskAnalytics };
+  return { analytics };
 };
 
 export const changeMemberRoleService = async (

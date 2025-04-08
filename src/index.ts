@@ -8,8 +8,13 @@ import connectDB from './config/database.config';
 
 import './config/passport.config';
 import passport from 'passport';
+import isAuthenticated from './middlewares/isAuthenticated';
+
+// routes import
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
+import workspaceRoutes from './routes/workspace.routes';
+import memberRoutes from './routes/member.routes';
 
 import { asyncHandler } from './middlewares/asyncHandler';
 import { BadRequestException } from './utils/appError';
@@ -38,7 +43,9 @@ app.use(passport.session());
 app.use(cors());
 
 app.use('/api/auth', authRoutes);
-app.use('/api/user', userRoutes);
+app.use('/api/user', isAuthenticated, userRoutes);
+app.use('./api/workspace', isAuthenticated, workspaceRoutes);
+app.use('./api/member', isAuthenticated, memberRoutes);
 
 app.listen(8000, () => {
   console.log(`App is listening on port:${config.PORT}`);
